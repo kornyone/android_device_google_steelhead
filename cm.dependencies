@@ -1,0 +1,8 @@
+[
+ {
+   "repository": "android_device_samsung_tuna",
+   "target_path": "device/samsung/tuna",
+   "branch": "ics"
+ }
+]
+
