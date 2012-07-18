@@ -19,3 +19,6 @@
 include device/samsung/tuna/BoardConfig.mk
 
 TARGET_PREBUILT_KERNEL := device/google/steelhead/prebuilt/kernel
+
+# No input for back on Steelhead
+BOARD_HAS_NO_SELECT_BUTTON := true
