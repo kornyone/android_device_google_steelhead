@@ -2,10 +2,10 @@
 PRODUCT_RELEASE_NAME := steelhead
 
 # Boot animation
-TARGET_BOOTANIMATION_NAME := horizontal-1280x720
+TARGET_BOOTANIMATION_NAME := horizontal-1280x800
 
 # Inherit some common CM stuff.
-$(call inherit-product, vendor/cm/config/common_full_media.mk)
+$(call inherit-product, vendor/cm/config/common_full_tablet_wifionly.mk)
 
 # Enhanced NFC
 $(call inherit-product, vendor/cm/config/nfc_enhanced.mk)
