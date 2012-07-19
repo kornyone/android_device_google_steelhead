@@ -29,9 +29,6 @@ adb pull /system/vendor/firmware/ducati-m3.bin ../../../vendor/$MANUFACTURER/$DE
 adb pull /system/vendor/firmware/libpn544_fw.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/libpn544_fw.so
 adb pull /system/vendor/etc/smc_normal_world_android_cfg.ini  ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/smc_normal_world_android_cfg.ini
 adb pull /system/vendor/lib/drm/libdrmwvmplugin.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/libdrmwvmplugin.so
-# Maybe take out hwcomposer?
-adb pull /system/vendor/lib/hw/hwcomposer.omap4.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/hwcomposer.omap4.so
-###
 adb pull /system/vendor/lib/libWVStreamControlAPI_L1.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/libWVStreamControlAPI_L1.so
 adb pull /system/vendor/lib/libwvdrm_L1.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/libwvdrm_L1.so
 adb pull /system/vendor/lib/libwvm.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/libwvm.so
