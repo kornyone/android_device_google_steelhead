@@ -1,0 +1,188 @@
+import init.steelhead.usb.rc
+
+on early-init
+    export EXTERNAL_STORAGE /storage/sdcard0
+    mkdir /storage 0050 system sdcard_r
+    mkdir /storage/sdcard0 0000 system system
+    # for backwards compatibility
+    symlink /storage/sdcard0 /sdcard
+    symlink /storage/sdcard0 /mnt/sdcard
+
+on post-fs-data
+    # we will remap this as /storage/sdcard0 with the sdcard fuse tool
+    mkdir /data/media 0775 media_rw media_rw
+    chown media_rw media_rw /data/media
+    setprop vold.post_fs_data_done 1
+    mkdir /data/misc/dhcp 0770 dhcp dhcp
+    chown dhcp dhcp /data/misc/dhcp
+    mkdir /data/misc/wifi/sockets 0770 wifi wifi
+    mkdir /data/smc 0770 drmrpc drmrpc
+    chown drmrpc drmrpc /data/smc/counter.bin
+    chown drmrpc drmrpc /data/smc/storage.bin
+    chown drmrpc drmrpc /data/smc/system.bin
+
+on boot
+	mount debugfs /sys/kernel/debug /sys/kernel/debug
+	chmod 0666 /dev/pvrsrvkm
+  mkdir /dev/input
+  chmod 0755 /dev/input
+
+# cpufreq interactive governor: timer 20ms, min sample 20ms, hispeed 800MHz
+	write /sys/devices/system/cpu/cpufreq/interactive/timer_rate 20000
+	write /sys/devices/system/cpu/cpufreq/interactive/min_sample_time 20000
+	write /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq 800000
+
+# Boost the CPU for 30 secs during boot
+	write /sys/devices/system/cpu/cpufreq/interactive/boost_timeout 30000000
+	write /sys/devices/system/cpu/cpu0/cpufreq/boost_cpufreq 1
+
+# autosuspend root hubs immediatly after attached devices
+	write /sys/bus/usb/devices/usb1/power/autosuspend_delay_ms 0
+	write /sys/bus/usb/devices/usb2/power/autosuspend_delay_ms 0
+
+on fs
+	mkdir /factory 0775 radio radio
+	mount_all /fstab.steelhead
+	setprop ro.crypto.fuse_sdcard true
+
+# H264 Encoder Profile setting
+# 1 - Base Profile
+# 2 - Main Profile
+# 8 - High Profile
+	setprop video.h264enc.profile 1
+
+# change permissions for ION driver
+    chmod 0777 /dev/ion
+
+# We chown/chmod /factory because mount is run as root + defaults
+	chown radio radio /factory
+	chmod 0775 /factory
+
+# add symlink for HDCP key
+	symlink /factory/hdcp.keys /system/vendor/firmware/hdcp.keys
+
+# change permissions for Sensors
+    chown system system /sys/bus/i2c/drivers/cma3000_accl/4-001c
+    chown system system /sys/bus/i2c/drivers/cma3000_accl/4-001c/enable
+    chown system system /sys/bus/i2c/drivers/cma3000_accl/4-001c/delay
+    chown system system /sys/devices/platform/sfh7741.1
+    chown system system /sys/devices/platform/sfh7741.1/state
+    chown system system /sys/bus/i2c/drivers/bmp085/4-0077
+    chown system system /sys/bus/i2c/drivers/bmp085/4-0077/enable
+    chown system system /sys/bus/i2c/drivers/hmc5843/4-001e
+    chown system system /sys/bus/i2c/drivers/hmc5843/4-001e/enable
+    chown system system /sys/bus/i2c/drivers/hmc5843/4-001e/rate
+
+# permissions for bluetooth.
+	setprop ro.bt.bdaddr_path "/sys/module/board_steelhead_bluetooth/parameters/btaddr"
+	chown bluetooth bluetooth ro.bt.bdaddr_path
+	chown bluetooth bluetooth /dev/ttyO1
+	chmod 0600 /dev/ttyO1
+	chmod 0660 /sys/class/rfkill/rfkill0/state
+	chown bluetooth bluetooth /sys/class/rfkill/rfkill0/state
+	chown bluetooth bluetooth /sys/class/rfkill/rfkill0/type
+
+# change permissions for S3D hardware
+    chown system system /sys/devices/platform/omapdss/display0/s3d_enable
+    chown system system /sys/devices/platform/omapdss/display1/s3d_enable
+    chown system system /sys/devices/platform/omapdss/display1/s3d_type
+
+# take a wakelock on boot until PM is working
+	write /sys/power/wake_lock hack
+
+# enable sound through HDMI
+  write /sys/devices/platform/omapdss/display0/s3d_enable 0
+
+###################################################
+# MSHIELD SMC Daemon - component required to store persistent data coming
+#   from the SMC PA to the device persistent storage
+###################################################
+service tf_daemon /system/bin/tf_daemon \
+    -d -c /vendor/etc/smc_normal_world_android_cfg.ini
+    class main
+    user root
+    group root
+    oneshot
+    disabled
+
+###################################################
+# MSHIELD SMC PA Control - installs the SMC PA into the Secure Environment
+###################################################
+service smc_pa /system/bin/smc_pa_ctrl \
+    -c /vendor/etc/smc_normal_world_android_cfg.ini \
+    start /vendor/firmware/smc_pa.ift
+    class core
+    user root
+    group root
+    oneshot
+
+# service which attaches the BCM4330's BT UART as a bluez HCI
+service hciattach /system/bin/brcm_patchram_plus --enable_hci --no2bytes --enable_lpm \
+	--tosleep 50000 --baudrate 3000000 --use_baudrate_for_download --i2s=1,1,0,1 \
+	--patchram /vendor/firmware/bcm4330.hcd /dev/ttyO1
+	class main
+	user bluetooth
+	group bluetooth net_bt_admin
+	disabled
+	oneshot
+
+service pvrsrvinit /vendor/bin/pvrsrvinit
+	class core
+	user root
+	group root
+	oneshot
+
+# create filesystems if necessary
+service setup_fs /system/bin/setup_fs \
+		/dev/block/platform/omap/omap_hsmmc.0/by-name/cache \
+		/dev/block/platform/omap/omap_hsmmc.0/by-name/userdata
+        class core
+        user root
+        group root
+        oneshot
+
+#shared transport user space mgr service for Bluetooth, FM and GPS
+#service uim /system/bin/uim-sysfs
+#	class core
+#	user bluetooth
+#	group bluetooth net_bt_admin
+
+# create virtual SD card at /storage/sdcard0, based on the /data/media directory
+# daemon will drop to user/group system/media_rw after initializing
+# underlying files in /data/media will be created with user and group media_rw (1023)
+service sdcard /system/bin/sdcard /data/media 1023 1023
+    class late_start
+
+service wpa_supplicant /system/bin/wpa_supplicant -Dnl80211 -iwlan0 -c/data/misc/wifi/wpa_supplicant.conf -dd
+    class main
+    socket wpa_wlan0 dgram 660 wifi wifi
+    disabled
+    oneshot
+
+service dhcpcd_wlan0 /system/bin/dhcpcd -ABKL
+    class main
+    disabled
+    oneshot
+
+service iprenew_wlan0 /system/bin/dhcpcd -n
+    class main
+    disabled
+    oneshot
+
+service dhcpcd_eth0 /system/bin/dhcpcd -ABKL
+    disabled
+    oneshot
+
+service iprenew_eth0 /system/bin/dhcpcd -n
+    disabled
+    oneshot
+
+service telnetd /system/bin/busybox telnetd -l /system/bin/sh
+  class main
+  user root
+  group root
+  oneshot
+
+on property:init.svc.smc_pa=stopped
+	start tf_daemon
+

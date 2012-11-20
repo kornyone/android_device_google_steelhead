@@ -1,4 +1,4 @@
-# Copyright (C) 2011 The Android Open Source Project
+# Copyright (C) 2012 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,21 +21,25 @@
 # lines, full and steelhead, hence its name.
 #
 
-# Camera
-PRODUCT_PACKAGES := \
-    Camera \
-    GNexusParts
+# Live Wallpapers
+PRODUCT_PACKAGES += \
+        LiveWallpapers \
+        LiveWallpapersPicker \
+        MagicSmokeWallpapers \
+        VisualizationWallpapers \
+        librs_jni
+
+PRODUCT_PROPERTY_OVERRIDES := \
+        net.dns1=8.8.8.8 \
+        net.dns2=8.8.4.4
 
 # Inherit from those products. Most specific first.
-$(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
-# This is where we'd set a backup provider if we had one
-#$(call inherit-product, device/sample/products/backup_overlay.mk)
-# Inherit from steelhead device
+$(call inherit-product, $(SRC_TARGET_DIR)/product/full_base.mk)
 $(call inherit-product, device/google/steelhead/device.mk)
+$(call inherit-product-if-exists, vendor/ti/proprietary/omap4xxx/ti-omap4-vendor.mk)
 
-# Set those variables here to overwrite the inherited values.
 PRODUCT_NAME := full_steelhead
 PRODUCT_DEVICE := steelhead
-PRODUCT_BRAND := Android
-PRODUCT_MODEL := Full AOSP on Steelhead
-PRODUCT_RESTRICT_VENDOR_FILES := false
+PRODUCT_BRAND := google
+PRODUCT_MODEL := Nexus Q
+PRODUCT_MANUFACTURER := google

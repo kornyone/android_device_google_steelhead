@@ -1,4 +1,4 @@
-# Copyright (C) 2011 The Android Open Source Project
+# Copyright (C) 2007 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -47,3 +47,5 @@
 # ************************************************
 # NEWER CLEAN STEPS MUST BE AT THE END OF THE LIST
 # ************************************************
+$(call add-clean-step, rm -f $(PRODUCT_OUT)/system/build.prop)
+$(call add-clean-step, rm -f $(PRODUCT_OUT)/system/build.prop)

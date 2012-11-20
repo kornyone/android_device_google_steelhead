@@ -1,2 +1,2 @@
 require board=steelhead
-require version-bootloader=steelheadB4H0J
+
