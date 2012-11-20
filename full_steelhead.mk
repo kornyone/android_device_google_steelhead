@@ -38,3 +38,4 @@ PRODUCT_NAME := full_steelhead
 PRODUCT_DEVICE := steelhead
 PRODUCT_BRAND := Android
 PRODUCT_MODEL := Full AOSP on Steelhead
+PRODUCT_RESTRICT_VENDOR_FILES := false

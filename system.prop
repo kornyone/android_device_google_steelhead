@@ -1,7 +1,3 @@
+#
 # system.prop for steelhead
-
-# Force Tablet UI
 ro.sf.lcd_density=160
-
-# Enable adb via networking port 4321 as in stock Q
-persist.adb.tcp.port 4321

@@ -15,10 +15,15 @@
 # Use the non-open-source part, if present
 -include vendor/google/steelhead/BoardConfigVendor.mk
 
+# Use the open-source board-info file if none was set by the vendor
+# config.
+TARGET_BOARD_INFO_FILE ?= device/google/steelhead/board-info.txt
+
 # Use the part that is common between all tunas
 include device/samsung/tuna/BoardConfig.mk
 
-TARGET_PREBUILT_KERNEL := device/google/steelhead/prebuilt/kernel
+TARGET_KERNEL_CONFIG := steelhead_defconfig
+TARGET_KERNEL_SOURCE := kernel/google/steelhead
 
 # No input for back on Steelhead
 BOARD_HAS_NO_SELECT_BUTTON := true

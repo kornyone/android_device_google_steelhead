@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# start ics
 # 223971 = ITL41D
 # 228551 = ITL41F
 # 236517 = IML70C
@@ -26,18 +27,28 @@
 # 262866 = IMM30D
 # 299849 = IMM76D
 # 330937 = IMM76I
-# end ics-mr1
-BRANCH=ics-mr1
+# end ics
+# start jellybean
+# 241580 = IRL89
+# 241968 = IRM03
+# 398337 = JRO03C
+# end jellybean
+BRANCH=jellybean
 if test $BRANCH=ics-mr1
 then
-  ZIP=yakju-ota-330937.zip
+  ZIP=tungsten-ota-330937.zip
   BUILD=imm76i
 fi # ics-mr1
-ROOTDEVICE=maguro
-DEVICE=maguro
-MANUFACTURER=samsung
+if test $BRANCH=jellybean
+then
+  ZIP=tungsten-ota-398337.zip
+  BUILD=jro03c
+fi # jellybean
+ROOTDEVICE=steelhead
+DEVICE=steelhead
+MANUFACTURER=google
 
-for COMPANY in broadcom csr imgtec invensense nxp samsung ti
+for COMPANY in broadcom csr imgtec invensense nxp google ti
 do
   echo Processing files from $COMPANY
   rm -rf tmp
@@ -51,10 +62,7 @@ do
             "
     ;;
   csr)
-    TO_EXTRACT="\
-            system/vendor/etc/sirfgps.conf \
-            system/vendor/lib/hw/gps.omap4.so \
-            "
+    TO_EXTRACT=""           
     ;;
   imgtec)
     TO_EXTRACT="\
@@ -83,11 +91,9 @@ do
             system/vendor/firmware/libpn544_fw.so \
             "
     ;;
-  samsung)
+  google)
     TO_EXTRACT="\
             system/bin/fRom \
-            system/lib/libsecril-client.so \
-            system/vendor/lib/libsec-ril.so \
             "
     ;;
   ti)
@@ -101,7 +107,7 @@ do
   do
     echo \ \ \ \ Extracting $ONE_FILE
     unzip -j -o $ZIP $ONE_FILE -d $FILEDIR > /dev/null || echo \ \ \ \ Error extracting $ONE_FILE
-    if test $ONE_FILE = system/vendor/bin/gpsd -o $ONE_FILE = system/vendor/bin/pvrsrvinit -o $ONE_FILE = system/bin/fRom
+    if test $ONE_FILE = system/vendor/bin/pvrsrvinit -o
     then
       chmod a+x $FILEDIR/$(basename $ONE_FILE) || echo \ \ \ \ Error chmoding $ONE_FILE
     fi

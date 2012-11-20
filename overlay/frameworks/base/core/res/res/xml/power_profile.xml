@@ -30,15 +30,6 @@
   <item name="wifi.scan">200</item>
   <item name="dsp.audio">150</item>
   <item name="dsp.video">200</item>
-  <item name="radio.active">150</item>
-  <item name="gps.on">55</item>
-  <item name="battery.capacity">1750</item>
-  <item name="radio.scanning">90</item> <!-- TBD -->
-  <!-- Current consumed by the radio at different signal strengths, when paging  -->
-   <array name="radio.on"> <!-- 1 entry per signal strength bin, TBD -->
-      <value>3.0</value>
-      <value>3.0</value>
-  </array>
   <array name="cpu.speeds">
     <value>350000</value>
     <value>700000</value>
