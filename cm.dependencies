@@ -1,0 +1,12 @@
+[
+  {
+   "repository": "kornyone/vendor_google_steelhead",
+   "target_path": "vendor/google/steelhead"
+  },
+ {
+   "repository": "kornyone/google-kernel-steelhead",
+   "target_path": "kernel/google/steelhead",
+   "branch": "aosp"
+ }
+]
+

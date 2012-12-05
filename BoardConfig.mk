@@ -18,7 +18,8 @@
 # Use the part that is common between all tunas
 include device/samsung/tuna/BoardConfig.mk
 
-TARGET_PREBUILT_KERNEL := device/google/steelhead/prebuilt/kernel
+TARGET_KERNEL_CONFIG := steelhead_defconfig
+TARGET_KERNEL_SOURCE := kernel/google/steelhead
 
 # No input for back on Steelhead
 BOARD_HAS_NO_SELECT_BUTTON := true
